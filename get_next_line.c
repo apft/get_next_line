@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/29 13:39:40 by apion             #+#    #+#             */
-/*   Updated: 2018/11/29 17:28:56 by apion            ###   ########.fr       */
+/*   Updated: 2018/11/30 19:30:32 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,38 +27,56 @@ static int	has_eol(const char *str)
 	return (-1);
 }
 
+static char	*ft_strjoin_until(const char *s1, const char *s2, int n)
+{
+	char	*join;
+	int		i;
+
+	i = 0;
+	while (s1 && *(s1 + i))
+		i++;
+	if (n < 0)
+	{
+		n = 0;
+		while (*s2 && *(s2 + n))
+			n++;
+	}
+	join = (char *)malloc(sizeof(*join) * (i + n + 1));
+	if (!join)
+		return (0);
+	*(join + i + n) = 0;
+	while (n--)
+		*(join + i + n) = *(s2 + n);
+	while (i--)
+		*(join + i) = *(s1 + i);
+	return (join);
+}
+
 int			get_next_line(const int fd, char **line)
 {
 	static t_lstfd	head;
 	size_t			s;
 	int				end;
-	char			*load;
 	char			*tmp;
 
-	if (BUFF_SIZE < 1)
-		return (-1);
-	load = 0;
-	while (head.eol || (s = read(fd, head.buff, BUFF_SIZE)) != -1)
+	tmp = 0;
+	while (BUFF_SIZE > 0 &&
+			(head.eol || (s = read(fd, head.buff, BUFF_SIZE)) != -1))
 	{
 		if ((end = has_eol(head.buff + head.eol)) != -1)
 		{
-			*line = ft_strsub(head.buff + head.eol, 0, end);
+			*line = ft_strjoin_until(tmp, head.buff + head.eol, end);
+			free(tmp);
 			if (!*line)
 				return (-1);
-			if (load)
-				*line = ft_strjoin(load, *line);
 			head.eol = end + 1;
 			return (s && 1);
 		}
 		else
 		{
-			tmp = ft_strdup(head.buff);
+			tmp = ft_strjoin_until(tmp, head.buff + head.eol, -1);
 			if (!tmp)
 				return (-1);
-			load = ft_strjoin(load, tmp);
-			if (!load)
-				return (-1);
-			free(tmp);
 			head.eol = 0;
 		}
 	}
