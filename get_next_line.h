@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/28 14:48:22 by apion             #+#    #+#             */
-/*   Updated: 2018/11/30 19:55:24 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/04 12:40:02 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@
 typedef struct	s_lstfd
 {
 	int				fd;
-	int				eol;
+	size_t			s;
+	int				prev;
 	struct s_lstfd	*next;
 	char			buff[BUFF_SIZE + 1];
 }				t_lstfd;

@@ -5,8 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/12/04 12:32:22 by apion             #+#    #+#             */
+/*   Updated: 2018/12/04 12:40:25 by apion            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/29 13:39:40 by apion             #+#    #+#             */
-/*   Updated: 2018/11/30 19:30:32 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/04 12:31:50 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +30,13 @@ static int	has_eol(const char *str)
 	int		i;
 
 	i = 0;
-	while (*(str + i))
+	while (i < BUFF_SIZE && *(str + i))
 	{
 		if (*(str + i) == EOL_CHAR)
 			return (i);
 		i++;
 	}
-	return (-1);
+	return (i);
 }
 
 static char	*ft_strjoin_until(const char *s1, const char *s2, int n)
@@ -52,33 +64,65 @@ static char	*ft_strjoin_until(const char *s1, const char *s2, int n)
 	return (join);
 }
 
+static void	dbg(t_lstfd *node, char *tmp, int eol)
+{
+	ft_putendl("----------------");
+	ft_putstr("fd: ");
+	ft_putnbr(node->fd);
+	ft_putstr("\ns: ");
+	ft_putnbr(node->s);
+	ft_putstr("\nprev: ");
+	ft_putnbr(node->prev);
+	ft_putstr("\neol: ");
+	ft_putnbr(eol);
+	ft_putstr("\nbuff: ");
+	ft_putstr(node->buff);
+	if (tmp)
+	{
+		ft_putstr("\ntmp: ");
+		ft_putstr(tmp);
+	}
+	ft_putendl("");
+}
+
 int			get_next_line(const int fd, char **line)
 {
 	static t_lstfd	head;
-	size_t			s;
-	int				end;
+	int				eol;
 	char			*tmp;
 
+	if (BUFF_SIZE < 1)
+		return (-1);
 	tmp = 0;
-	while (BUFF_SIZE > 0 &&
-			(head.eol || (s = read(fd, head.buff, BUFF_SIZE)) != -1))
+	dbg(&head, tmp, eol);
+	while (head.buff[head.prev] != 0 || (head.s = read(fd, head.buff, BUFF_SIZE)) != -1)
 	{
-		if ((end = has_eol(head.buff + head.eol)) != -1)
+		eol = has_eol(head.buff + head.prev);
+		dbg(&head, tmp, eol);
+		ft_putstr("-- c= ");
+		ft_putnbr(head.buff[head.prev + eol]);
+		ft_putchar("\n");
+		if (head.buff[head.prev + eol] == EOL_CHAR || (head.s == 0 && head.buff[head.prev + eol] == 0))
 		{
-			*line = ft_strjoin_until(tmp, head.buff + head.eol, end);
+			ft_putendl("\nextract line");
+			*line = ft_strjoin_until(tmp, head.buff + head.prev, eol);
 			free(tmp);
 			if (!*line)
 				return (-1);
-			head.eol = end + 1;
-			return (s && 1);
+			if (head.buff[head.prev + eol] == 0)
+				return (0);
+			head.prev += eol + 1;
+			return (1);
 		}
 		else
 		{
-			tmp = ft_strjoin_until(tmp, head.buff + head.eol, -1);
+			ft_putendl("use a tmp");
+			tmp = ft_strjoin_until(tmp, head.buff + head.prev, -1);
 			if (!tmp)
 				return (-1);
-			head.eol = 0;
+			head.prev = 0;
+			head.buff[head.prev] = 0;
 		}
-	}
+	}	
 	return (-1);
 }
