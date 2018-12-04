@@ -6,21 +6,21 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/29 13:39:40 by apion             #+#    #+#             */
-/*   Updated: 2018/12/04 12:42:24 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/04 21:57:19 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "get_next_line.h"
 
-static int	has_eol(const char *str)
+static int	has_eol(t_lstfd *fd)
 {
 	int		i;
 
 	i = 0;
-	while (i < BUFF_SIZE && *(str + i))
+	while (i < (fd->s - 1) && *(fd->buff + fd->prev + i))
 	{
-		if (*(str + i) == EOL_CHAR)
+		if (*(fd->buff + fd->prev + i) == EOL_CHAR)
 			return (i);
 		i++;
 	}
@@ -48,8 +48,35 @@ static char	*ft_strjoin_until(const char *s1, const char *s2, int n)
 	while (n--)
 		*(join + i + n) = *(s2 + n);
 	while (i--)
-		*(join + i) = *(s1 + i);
+		*(join + i) = *(s1 + i) == EOL_CHAR ? 0 : *(s1 + i);
 	return (join);
+}
+
+static void	dbg(t_lstfd *node, char *tmp, int eol)
+{
+	return ;
+	ft_putendl("----------------");
+	ft_putstr("bs: ");
+	ft_putnbr(BUFF_SIZE);
+	ft_putstr("\nfd: ");
+	ft_putnbr(node->fd);
+	ft_putstr("\ns: ");
+	ft_putnbr(node->s);
+	ft_putstr("\nhas_prev: ");
+	ft_putchar('0' + node->has_prev);
+	ft_putstr("\nprev: ");
+	ft_putnbr(node->prev);
+	ft_putstr("\neol: ");
+	ft_putnbr(eol);
+	ft_putstr("\nbuff: ");
+	ft_putnbr(node->buff[0]);
+	ft_putstr(node->buff);
+	if (tmp)
+	{
+		ft_putstr("\ntmp: ");
+		ft_putstr(tmp);
+	}
+	ft_putendl("---");
 }
 
 int			get_next_line(const int fd, char **line)
@@ -61,18 +88,23 @@ int			get_next_line(const int fd, char **line)
 	if (BUFF_SIZE < 1)
 		return (-1);
 	tmp = 0;
-	while (head.buff[head.prev] != 0 || (head.s = read(fd, head.buff, BUFF_SIZE)) != -1)
+	while (head.has_prev != 0 || (head.s = read(fd, head.buff, BUFF_SIZE)) != -1)
 	{
-		eol = has_eol(head.buff + head.prev);
-		if (head.buff[head.prev + eol] == EOL_CHAR || (head.s == 0 && head.buff[head.prev + eol] == 0))
+		head.buff[head.s] = 0;
+		eol = has_eol(&head);
+		dbg(&head, tmp, eol);
+		if (head.buff[head.prev + eol] == EOL_CHAR || (head.s < BUFF_SIZE && eol == head.s))
 		{
 			*line = ft_strjoin_until(tmp, head.buff + head.prev, eol);
 			free(tmp);
+			//ft_putstr("extract line\nline: ");
+			//ft_putendl(*line);
 			if (!*line)
 				return (-1);
-			if (head.buff[head.prev + eol] == 0)
+			if (head.s == 0 && eol == 0)
 				return (0);
 			head.prev += eol + 1;
+			head.has_prev = 1;
 			return (1);
 		}
 		else
@@ -81,7 +113,7 @@ int			get_next_line(const int fd, char **line)
 			if (!tmp)
 				return (-1);
 			head.prev = 0;
-			head.buff[head.prev] = 0;
+			head.has_prev = 0;
 		}
 	}	
 	return (-1);

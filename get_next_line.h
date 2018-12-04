@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/28 14:48:22 by apion             #+#    #+#             */
-/*   Updated: 2018/12/04 12:40:02 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/04 22:04:10 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,15 @@
 
 # include <unistd.h>
 
-# define BUFF_SIZE 200
+# define BUFF_SIZE 128
 # define EOL_CHAR '\n'
 
 typedef struct	s_lstfd
 {
 	int				fd;
-	size_t			s;
+	ssize_t			s;
 	int				prev;
+	char			has_prev;
 	struct s_lstfd	*next;
 	char			buff[BUFF_SIZE + 1];
 }				t_lstfd;
