@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/28 14:00:24 by apion             #+#    #+#             */
-/*   Updated: 2018/12/05 17:08:25 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/05 17:24:58 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ int		main(int argc, char **argv)
 		free(line);
 		i++;
 	}
-		ft_putnbr(ret);
 	if (fd1 != 0)
 		close(fd1);
 	return (0);
