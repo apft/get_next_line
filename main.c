@@ -6,13 +6,16 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/28 14:00:24 by apion             #+#    #+#             */
-/*   Updated: 2018/12/04 22:00:51 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/05 17:08:25 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include "libft.h"
 #include <fcntl.h>
+
+void	ft_putstr(const char *s);
+void	ft_putstr_fd(const char *s, int fd);
+void	ft_putnbr(int n);
 
 int		main(int argc, char **argv)
 {
@@ -37,12 +40,7 @@ int		main(int argc, char **argv)
 		free(line);
 		i++;
 	}
-	if (ret == 0)
-	{
-	//	ft_putnbr(i);
-	//	ft_putstr(": ");
-		ft_putstr(line);
-	}
+		ft_putnbr(ret);
 	if (fd1 != 0)
 		close(fd1);
 	return (0);
