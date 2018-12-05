@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/29 13:39:40 by apion             #+#    #+#             */
-/*   Updated: 2018/12/04 21:57:19 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/04 22:07:10 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static char	*ft_strjoin_until(const char *s1, const char *s2, int n)
 	while (n--)
 		*(join + i + n) = *(s2 + n);
 	while (i--)
-		*(join + i) = *(s1 + i) == EOL_CHAR ? 0 : *(s1 + i);
+		*(join + i) = *(s1 + i);
 	return (join);
 }
 

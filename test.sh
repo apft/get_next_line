@@ -30,3 +30,5 @@ else
 		run_test
 	done
 fi
+
+echo -n "\n\n" > tst && ./gnl.out tst > tst_diff && diff tst tst_diff
