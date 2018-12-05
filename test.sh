@@ -3,7 +3,15 @@
 HEADER="get_next_line.h"
 BAK=".bak"
 
+TEST_HARD_LINE=hard_big_line.txt
+a="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in leo dignissim, gravida leo id, imperdiet urna. Aliquam magna nunc, maximus quis eleifend et, scelerisque non dolor. Suspendisse augue augue, tempus"
+b=""
+for i in {1..30}; do
+	b+=$a
+done
+echo "$b\c" > ${TEST_HARD_LINE}
 FILE=ideas.txt
+#FILE=${TEST_HARD_LINE}
 
 run_test()
 {
@@ -17,6 +25,7 @@ run_test()
 
 	if [[ $? -eq 0 ]]; then
 		./gnl.out $FILE > tmp
+		#echo $b | ./gnl.out > tmp
 		diff tmp $FILE > diff_${BUFF_SIZE}
 		[[ $# -eq 0 ]] && [[ -s diff_${BUFF_SIZE} ]] && echo ${BUFF_SIZE} && cat diff_${BUFF_SIZE}
 	fi
@@ -33,4 +42,7 @@ else
 	done
 fi
 
-printf "\n\n" > tst && ./gnl.out tst > tst_diff && diff tst tst_diff
+#printf "\n\n" > tst && ./gnl.out tst > tst_diff && diff tst tst_diff
+
+
+
