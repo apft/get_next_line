@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/28 14:48:22 by apion             #+#    #+#             */
-/*   Updated: 2018/12/05 18:48:01 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/14 16:12:21 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,17 @@
 
 # include <unistd.h>
 # include <stdlib.h>
+# include "libft.h"
 
 # define BUFF_SIZE 11
-# define EOL_CHR '\n'
+# define EOL_CHAR '\n'
 
 typedef struct	s_lstfd
 {
 	int				fd;
-	ssize_t			s;
-	int				prev;
+	char			*res;
+	struct s_lstfd	*prev;
 	struct s_lstfd	*next;
-	char			buff[BUFF_SIZE + 1];
 }				t_lstfd;
 
 int				get_next_line(const int fd, char **line);

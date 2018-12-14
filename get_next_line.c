@@ -6,86 +6,95 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/29 13:39:40 by apion             #+#    #+#             */
-/*   Updated: 2018/12/05 19:20:41 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/14 19:29:47 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static int	ft_strlen_gnl(const char *s)
+static t_lstfd	*gnl_get_node(t_lstfd *lst, const int fd)
 {
-	int		i;
+	t_lstfd		*node;
 
-	if (!s)
-		return (0);
-	i = 0;
-	while (*(s + i))
-		i++;
-	return (i);
-}
-
-static int	has_eol(t_lstfd *lst)
-{
-	int		i;
-
-	lst->buff[lst->s] = 0;
-	i = 0;
-	while (i < (lst->s) && *(lst->buff + lst->prev + i))
+	if (!lst)
 	{
-		if (*(lst->buff + lst->prev + i) == EOL_CHR)
-			return (i);
-		i++;
-	}
-	return (i);
-}
-
-static char	*ft_strjoin_until(const char *s1, const char *s2, int n)
-{
-	char	*join;
-	int		i;
-
-	i = ft_strlen_gnl(s1);
-	if (n < 0)
-		n = ft_strlen_gnl(s2);
-	if ((join = (char *)malloc(sizeof(*join) * (i + n + 1))) == 0)
-	{
-		free((void *)s1);
-		return (0);
-	}
-	*(join + i + n) = 0;
-	while (n--)
-		*(join + i + n) = *(s2 + n);
-	while (i--)
-		*(join + i) = *(s1 + i);
-	free((void *)s1);
-	return (join);
-}
-
-int			get_next_line(const int fd, char **line)
-{
-	static t_lstfd	lst;
-	int				eol;
-	char			*tmp;
-
-	if (BUFF_SIZE < 1 || !line)
-		return (-1);
-	tmp = 0;
-	while (lst.prev != 0 || (lst.s = read(fd, lst.buff, BUFF_SIZE)) != -1)
-	{
-		if (lst.s == 0)
+		node = (t_lstfd *)malloc(sizeof(*node));
+		if (!node)
 			return (0);
-		eol = has_eol(&lst);
-		if (lst.buff[lst.prev + eol] == EOL_CHR ||
-				(lst.s < BUFF_SIZE && lst.prev + eol == lst.s))
-		{
-			if (!(*line = ft_strjoin_until(tmp, lst.buff + lst.prev, eol)))
-				return (-1);
-			lst.prev = (lst.s <= lst.prev + eol + 1) ? 0 : lst.prev + eol + 1;
-			return (1);
-		}
-		if (!(tmp = ft_strjoin_until(tmp, lst.buff + lst.prev, -1)))
-			return (-1);
-		lst.prev = 0;
+		node->fd = fd;
+		node->res = 0;
+		node->next = 0;
+		node->prev = 0;
+		return (node);
 	}
-	return (-1);
+	return (lst);
+}
+
+static void		gnl_extract_res(t_lstfd *node, char *str, int join)
+{
+	char	*tmp;
+
+	//ft_putendl("extraction:");
+	//ft_print_mem(str, ft_strlen(str));
+	tmp = node->res;
+	if (join)
+		node->res = ft_strjoin(node->res, str);
+	else
+		node->res = ft_strdup(str);
+	ft_memdel((void **)&tmp);
+}
+
+static int		gnl_extract_line(char *str, t_lstfd *node, char *eol, char **l)
+{
+	char	*tmp;
+	int		i;
+
+	i = eol - str;
+	tmp = (char *)malloc(sizeof(*str) * (i + 1));
+	if (!tmp)
+	{
+		ft_memdel((void **)&node->res);
+		return (-1);
+	}
+	*(tmp + i) = 0;
+	while (i--)
+		*(tmp + i) = *(str + i);
+	*l = ft_strjoin(node->res, tmp);
+	if (*(eol + 1))
+		gnl_extract_res(node, eol + 1, 0);
+	else
+		ft_memdel((void**)&node->res);
+	ft_memdel((void **)&tmp);
+	return (l ? 1 : -1);
+}
+
+int				get_next_line(const int fd, char **line)
+{
+	static t_lstfd	*lst;
+	char			buff[BUFF_SIZE + 1];
+	int				r;
+	char			*eol;
+
+	if (BUFF_SIZE < 1 || fd < 0 || !line)
+		return (-1);
+	lst = gnl_get_node(lst, fd);
+	while ((eol = ft_strchr(lst->res, EOL_CHAR)) != 0 ||
+			((r = read(lst->fd, buff, BUFF_SIZE)) > 0 &&
+			(buff[BUFF_SIZE] = 0) == 0))
+	{
+		//ft_putstr("res: ");
+		//ft_putendl(lst->res);
+		//ft_print_mem(buff, BUFF_SIZE + 1);
+		if (eol)
+			return (gnl_extract_line(lst->res, lst, eol, line));
+		else if ((eol = ft_strchr(buff, EOL_CHAR)))
+			return (gnl_extract_line(buff, lst, eol, line));
+		else if (r < BUFF_SIZE)
+			return (gnl_extract_line(buff, lst, buff + r, line));
+		else
+			gnl_extract_res(lst, buff, 1);
+	}
+	ft_memdel((void **)&lst->res);
+	ft_memdel((void **)&lst);
+	return (r);
 }

@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/07 15:16:22 by apion             #+#    #+#             */
-/*   Updated: 2018/12/08 14:37:41 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/14 19:08:58 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,8 @@ void			*ft_memccpy(void *dst, const void *src, int c, size_t n);
 void			*ft_memmove(void *dst, const void *src, size_t len);
 void			*ft_memchr(const void *s, int c, size_t n);
 
+void			ft_print_mem(void *addr, size_t n);
+
 typedef struct	s_list
 {
 	void			*content;
@@ -132,7 +134,5 @@ void			ft_lstdel(t_list **alst, void (*del)(void *, size_t));
 void			ft_lstadd(t_list **alst, t_list *new);
 void			ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list			*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
-
-void			ft_print_mem(void *addr, size_t n);
 
 #endif

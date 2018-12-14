@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strchr.c                                        :+:      :+:    :+:   */
+/*   ft_strcat.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/20 17:50:29 by apion             #+#    #+#             */
-/*   Updated: 2018/11/21 12:51:04 by apion            ###   ########.fr       */
+/*   Created: 2018/11/21 16:46:15 by apion             #+#    #+#             */
+/*   Updated: 2018/12/14 18:23:41 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strchr(const char *s, int c)
+char	*ft_strcat(char *s1, const char *s2)
 {
-	while (*s)
-	{
-		if (*s == (char)c)
-			return ((char *)s);
-		s++;
-	}
-	return (*s == (char)c ? (char *)s : 0);
+	size_t	i;
+
+	if (!s1 || !s2)
+		return (s1);
+	i = 0;
+	while (*(s1 + i))
+		i++;
+	while (*s2)
+		*(s1 + i++) = *s2++;
+	*(s1 + i) = 0;
+	return (s1);
 }
