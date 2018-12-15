@@ -114,10 +114,10 @@ $(D_DIR)%.d: ;
 .PRECIOUS: $(D_DIR)%.d
 
 $(D_DIR):
-	mkdir $@/$(C_DIR)
+	mkdir -p $@$(C_DIR)
 
 $(O_DIR):
-	mkdir $@/$(C_DIR)
+	mkdir -p $@$(C_DIR)
 
 .PHONY: clean fclean
 clean:

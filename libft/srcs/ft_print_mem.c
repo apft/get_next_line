@@ -12,12 +12,12 @@
 
 #include "libft.h"
 
-static void	pm_print_hexa(char *mem, size_t beg, size_t n)
+static void	pm_print_hexa(unsigned char *mem, size_t beg, size_t n)
 {
 	char	*b;
 	size_t	j;
 
-	b = "01234567890abcdef";
+	b = "0123456789abcdef";
 	j = 0;
 	while (j < 16 && j + beg < n)
 	{
@@ -68,7 +68,7 @@ void		ft_print_mem(void *addr, size_t n)
 		ft_putstr("0x");
 		ft_putnbr_hex((unsigned long)(mem + i));
 		ft_putstr("  ");
-		pm_print_hexa(mem, i, n);
+		pm_print_hexa((unsigned char *)mem, i, n);
 		pm_print_char(mem, i, n);
 		ft_putendl(0);
 		i += 16;
