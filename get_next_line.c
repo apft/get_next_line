@@ -15,7 +15,13 @@
 static t_lstfd	*gnl_get_node(t_lstfd *lst, const int fd)
 {
 	t_lstfd		*node;
+	char		found;
 
+	found = 0;
+	while (!found && lst && (found = (lst->fd != fd)))
+		lst = lst->prev;
+	while (!found && lst && (found = (lst->fd != fd)))
+		lst = lst->next;
 	if (!lst)
 	{
 		node = (t_lstfd *)malloc(sizeof(*node));
@@ -30,12 +36,38 @@ static t_lstfd	*gnl_get_node(t_lstfd *lst, const int fd)
 	return (lst);
 }
 
+static int		gnl_free_node(t_lstfd *lst, const int fd, const int ret)
+{
+	t_lstfd		*node;
+	t_lstfd		*prev;
+	t_lstfd		*next;
+
+	node = lst;
+	while (node && node->fd != fd)
+		node = node->prev;
+	while (node && node->fd != fd)
+		node = node->next;
+	if (node)
+	{
+		prev = node->prev;
+		next = node->next;
+		if (prev)
+			prev->next = next;
+		if (next)
+			next->prev = prev;
+		ft_memdel((void **)&node->res);
+	}
+	ft_memdel((void **)&node);
+	lst = prev;
+	return (ret);
+}
+
 static void		gnl_extract_res(t_lstfd *node, char *str, int join)
 {
 	char	*tmp;
 
-	//ft_putendl("extraction:");
-	//ft_print_mem(str, ft_strlen(str));
+//	ft_putendl("\e[4mextraction:\e[0m");
+//	ft_print_mem(str, ft_strlen(str));
 	tmp = node->res;
 	if (join)
 		node->res = ft_strjoin(node->res, str);
@@ -48,24 +80,32 @@ static int		gnl_extract_line(char *str, t_lstfd *node, char *eol, char **l)
 {
 	char	*tmp;
 	int		i;
+	char	join;
 
+	join = str ? 1 : 0;
+	str = str ? str : node->res;
 	i = eol - str;
-	tmp = (char *)malloc(sizeof(*str) * (i + 1));
-	if (!tmp)
-	{
-		ft_memdel((void **)&node->res);
-		return (-1);
-	}
+	if (!(tmp = (char *)malloc(sizeof(*str) * (i + 1))))
+		return (gnl_free_node(node, node->fd, -1));
 	*(tmp + i) = 0;
 	while (i--)
 		*(tmp + i) = *(str + i);
-	*l = ft_strjoin(node->res, tmp);
+//	ft_putendl("\e[4mtmp:\e[0m");
+//	ft_print_mem(tmp, ft_strlen(tmp));
+	if (join)
+	{
+		*l = ft_strjoin(node->res, tmp);
+		ft_memdel((void **)&tmp);
+	}
+	else
+		*l = tmp;
 	if (*(eol + 1))
 		gnl_extract_res(node, eol + 1, 0);
 	else
 		ft_memdel((void**)&node->res);
-	ft_memdel((void **)&tmp);
-	return (l ? 1 : -1);
+//	ft_putendl("\e[4mline:\e[0m");
+//	ft_print_mem(*l, ft_strlen(*l));
+	return (*l ? 1 : gnl_free_node(node, node->fd, -1));
 }
 
 int				get_next_line(const int fd, char **line)
@@ -75,26 +115,27 @@ int				get_next_line(const int fd, char **line)
 	int				r;
 	char			*eol;
 
-	if (BUFF_SIZE < 1 || fd < 0 || !line)
+	if (BUFF_SIZE < 1 || fd < 0 || !line || !(lst = gnl_get_node(lst, fd)))
 		return (-1);
-	lst = gnl_get_node(lst, fd);
-	while ((eol = ft_strchr(lst->res, EOL_CHAR)) != 0 ||
-			((r = read(lst->fd, buff, BUFF_SIZE)) > 0 &&
-			(buff[BUFF_SIZE] = 0) == 0))
+	while ((eol = ft_strchr(lst->res, EOL_CHAR)) != 0
+			|| ((r = read(lst->fd, buff, BUFF_SIZE)) > 0
+				&& (buff[BUFF_SIZE] = 0) == 0))
 	{
-		//ft_putstr("res: ");
-		//ft_putendl(lst->res);
-		//ft_print_mem(buff, BUFF_SIZE + 1);
 		if (eol)
-			return (gnl_extract_line(lst->res, lst, eol, line));
-		else if ((eol = ft_strchr(buff, EOL_CHAR)))
+		{
+//			ft_putendl("\e[4mres:\e[0m");
+//			ft_print_mem(lst->res, ft_strlen(lst->res) + 1);
+			return (gnl_extract_line(0, lst, eol, line));
+		}
+		if ((eol = ft_strchr(buff, EOL_CHAR)))
+		{
+//			ft_putendl("\e[4mbuff:\e[0m");
+//			ft_print_mem(buff, BUFF_SIZE + 1);
 			return (gnl_extract_line(buff, lst, eol, line));
-		else if (r < BUFF_SIZE)
+		}
+		if (r < BUFF_SIZE)
 			return (gnl_extract_line(buff, lst, buff + r, line));
-		else
-			gnl_extract_res(lst, buff, 1);
+		gnl_extract_res(lst, buff, 1);
 	}
-	ft_memdel((void **)&lst->res);
-	ft_memdel((void **)&lst);
-	return (r);
+	return (gnl_free_node(lst, fd, r));
 }
