@@ -76,6 +76,8 @@ static void		gnl_extract_res(t_lstfd *node, char *str, int join)
 	else
 		node->res = ft_strdup(str);
 	ft_memdel((void **)&tmp);
+//	ft_putendl("\e[4mres:\e[0m");
+//	ft_print_mem(node->res, ft_strlen(node->res));
 }
 
 static int		gnl_extract_line(char *str, t_lstfd *node, char *eol, char **l)
@@ -136,7 +138,11 @@ int				get_next_line(const int fd, char **line)
 			return (gnl_extract_line(buff, lst, eol, line));
 		}
 		if (r < BUFF_SIZE)
+		{
+//			ft_putendl("\e[4mr< buff:\e[0m");
+//			ft_print_mem(buff, BUFF_SIZE + 1);
 			return (gnl_extract_line(buff, lst, buff + r, line));
+		}
 		gnl_extract_res(lst, buff, 1);
 	}
 	return (gnl_free_node(&lst, fd, r));
