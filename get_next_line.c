@@ -18,31 +18,34 @@ static t_lstfd	*gnl_get_node(t_lstfd *lst, const int fd)
 	char		found;
 
 	found = 0;
-	while (!found && lst && (found = (lst->fd != fd)))
+	while (lst && !found && !(found = (lst->fd == fd)) && lst->prev)
 		lst = lst->prev;
-	while (!found && lst && (found = (lst->fd != fd)))
+	while (lst && !found && !(found = (lst->fd == fd)) && lst->next)
 		lst = lst->next;
-	if (!lst)
-	{
-		node = (t_lstfd *)malloc(sizeof(*node));
-		if (!node)
-			return (0);
-		node->fd = fd;
-		node->res = 0;
-		node->next = 0;
-		node->prev = 0;
-		return (node);
-	}
-	return (lst);
+	if (found)
+		return (lst);
+	node = (t_lstfd *)malloc(sizeof(*node));
+	if (!node)
+		return (0);
+	node->fd = fd;
+	node->res = 0;
+	node->next = 0;
+	node->prev = lst;
+	if (lst)
+		lst->next = node;
+	return (node);
 }
 
-static int		gnl_free_node(t_lstfd *lst, const int fd, const int ret)
+static int		gnl_free_node(t_lstfd **lst, const int fd, const int ret)
 {
 	t_lstfd		*node;
 	t_lstfd		*prev;
 	t_lstfd		*next;
 
-	node = lst;
+	if (!lst || !*lst)
+		return (ret);
+	node = *lst;
+	*lst = (*lst)->prev ? (*lst)->prev : (*lst)->next;
 	while (node && node->fd != fd)
 		node = node->prev;
 	while (node && node->fd != fd)
@@ -58,7 +61,6 @@ static int		gnl_free_node(t_lstfd *lst, const int fd, const int ret)
 		ft_memdel((void **)&node->res);
 	}
 	ft_memdel((void **)&node);
-	lst = prev;
 	return (ret);
 }
 
@@ -86,7 +88,7 @@ static int		gnl_extract_line(char *str, t_lstfd *node, char *eol, char **l)
 	str = str ? str : node->res;
 	i = eol - str;
 	if (!(tmp = (char *)malloc(sizeof(*str) * (i + 1))))
-		return (gnl_free_node(node, node->fd, -1));
+		return (gnl_free_node(&node, node->fd, -1));
 	*(tmp + i) = 0;
 	while (i--)
 		*(tmp + i) = *(str + i);
@@ -105,7 +107,7 @@ static int		gnl_extract_line(char *str, t_lstfd *node, char *eol, char **l)
 		ft_memdel((void**)&node->res);
 //	ft_putendl("\e[4mline:\e[0m");
 //	ft_print_mem(*l, ft_strlen(*l));
-	return (*l ? 1 : gnl_free_node(node, node->fd, -1));
+	return (*l ? 1 : gnl_free_node(&node, node->fd, -1));
 }
 
 int				get_next_line(const int fd, char **line)
@@ -137,5 +139,5 @@ int				get_next_line(const int fd, char **line)
 			return (gnl_extract_line(buff, lst, buff + r, line));
 		gnl_extract_res(lst, buff, 1);
 	}
-	return (gnl_free_node(lst, fd, r));
+	return (gnl_free_node(&lst, fd, r));
 }
