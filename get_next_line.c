@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/29 13:39:40 by apion             #+#    #+#             */
-/*   Updated: 2018/12/17 14:38:43 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/17 14:48:34 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,16 +68,12 @@ static void		gnl_extract_res(t_lstfd *node, char *str, int join)
 {
 	char	*tmp;
 
-//	ft_putendl("\e[4mextraction:\e[0m");
-//	ft_print_mem(str, ft_strlen(str));
 	tmp = node->res;
 	if (join)
 		node->res = ft_strjoin(node->res, str);
 	else
 		node->res = ft_strdup(str);
 	ft_memdel((void **)&tmp);
-//	ft_putendl("\e[4mres:\e[0m");
-//	ft_print_mem(node->res, ft_strlen(node->res));
 }
 
 static int		gnl_extract_line(char *str, t_lstfd *node, char *eol, char **l)
@@ -94,8 +90,6 @@ static int		gnl_extract_line(char *str, t_lstfd *node, char *eol, char **l)
 	*(tmp + i) = 0;
 	while (i--)
 		*(tmp + i) = *(str + i);
-//	ft_putendl("\e[4mtmp:\e[0m");
-//	ft_print_mem(tmp, ft_strlen(tmp));
 	if (join)
 	{
 		*l = ft_strjoin(node->res, tmp);
@@ -107,8 +101,6 @@ static int		gnl_extract_line(char *str, t_lstfd *node, char *eol, char **l)
 		gnl_extract_res(node, eol + 1, 0);
 	else
 		ft_memdel((void**)&node->res);
-//	ft_putendl("\e[4mline:\e[0m");
-//	ft_print_mem(*l, ft_strlen(*l));
 	return (*l ? 1 : gnl_free_node(&node, node->fd, -1));
 }
 
@@ -126,23 +118,11 @@ int				get_next_line(const int fd, char **line)
 				&& (buff[r] = 0) == 0))
 	{
 		if (eol)
-		{
-//			ft_putendl("\e[4mres:\e[0m");
-//			ft_print_mem(lst->res, ft_strlen(lst->res) + 1);
 			return (gnl_extract_line(0, lst, eol, line));
-		}
 		if ((eol = ft_strchr(buff, EOL_CHAR)))
-		{
-//			ft_putendl("\e[4mbuff:\e[0m");
-//			ft_print_mem(buff, BUFF_SIZE + 1);
 			return (gnl_extract_line(buff, lst, eol, line));
-		}
 		if (r < BUFF_SIZE)
-		{
-//			ft_putendl("\e[4mr< buff:\e[0m");
-//			ft_print_mem(buff, BUFF_SIZE + 1);
 			return (gnl_extract_line(buff, lst, buff + r, line));
-		}
 		gnl_extract_res(lst, buff, 1);
 	}
 	if (lst->res)
