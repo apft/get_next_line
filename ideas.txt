@@ -1,3 +1,0 @@
-idees de test
-- creer plusieurs fd plusieurs fichiers
-- fd multiples sur 1 fichier (lire n ligne fd1 puis lire 2 lignes fd2...)
