@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/29 13:39:40 by apion             #+#    #+#             */
-/*   Updated: 2018/12/14 19:29:47 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/17 14:38:43 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ static int		gnl_extract_line(char *str, t_lstfd *node, char *eol, char **l)
 	}
 	else
 		*l = tmp;
-	if (*(eol + 1))
+	if (*eol && *(eol + 1))
 		gnl_extract_res(node, eol + 1, 0);
 	else
 		ft_memdel((void**)&node->res);
@@ -123,7 +123,7 @@ int				get_next_line(const int fd, char **line)
 		return (-1);
 	while ((eol = ft_strchr(lst->res, EOL_CHAR)) != 0
 			|| ((r = read(lst->fd, buff, BUFF_SIZE)) > 0
-				&& (buff[BUFF_SIZE] = 0) == 0))
+				&& (buff[r] = 0) == 0))
 	{
 		if (eol)
 		{
@@ -145,5 +145,7 @@ int				get_next_line(const int fd, char **line)
 		}
 		gnl_extract_res(lst, buff, 1);
 	}
+	if (lst->res)
+		return (gnl_extract_line(0, lst, lst->res + ft_strlen(lst->res), line));
 	return (gnl_free_node(&lst, fd, r));
 }

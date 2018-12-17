@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/28 14:48:22 by apion             #+#    #+#             */
-/*   Updated: 2018/12/14 16:12:21 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/17 14:40:39 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-# define BUFF_SIZE 11
+# define BUFF_SIZE 1
 # define EOL_CHAR '\n'
 
 typedef struct	s_lstfd
