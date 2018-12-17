@@ -6,7 +6,7 @@
 #    By: apion <marvin@42.fr>                       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/12 15:44:52 by apion             #+#    #+#              #
-#    Updated: 2018/12/14 19:04:44 by apion            ###   ########.fr        #
+#    Updated: 2018/12/17 15:25:14 by apion            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,10 +22,10 @@ SUFFIXES	= .c .o .d
 LIB			:= ft
 ARCHIVE		:= lib$(LIB).a
 NAME		:= $(ARCHIVE)
-C_DIR		:= srcs/
-H_DIR		:= includes/
-D_DIR		:= .dep/
-O_DIR		:= .obj/
+C_DIR		:= srcs
+H_DIR		:= includes
+D_DIR		:= .dep
+O_DIR		:= .obj
 H_FILES		:= libft.h
 C_FILES		:= ft_atoi.c \
 				ft_bzero.c \
@@ -95,36 +95,36 @@ C_FILES		:= ft_atoi.c \
 				ft_swap.c \
 				ft_tolower.c \
 				ft_toupper.c
-C_FILES		:= $(addprefix $(C_DIR), $(C_FILES))
+C_FILES		:= $(addprefix $(C_DIR)/, $(C_FILES))
 D_FILES		:= $(C_FILES:%.c=%.d)
 O_FILES		:= $(C_FILES:%.c=%.o)
 
 .PHONY: all
 all: $(NAME)
 
-$(NAME): $(addprefix $(O_DIR),$(O_FILES))
+$(NAME): $(addprefix $(O_DIR)/,$(O_FILES))
 	$(AR) rc $@ $?
 	$(RANLIB) $@
 
 %.o: %.c
-$(O_DIR)%.o: %.c $(D_DIR)%.d | $(D_DIR) $(O_DIR)
-	$(CC) $(CFLAGS) -MMD -MP -MF $(D_DIR)$*.d -o $@ -c $<
+$(O_DIR)/%.o: %.c $(D_DIR)/%.d | $(D_DIR) $(O_DIR)
+	$(CC) $(CFLAGS) -MMD -MP -MF $(D_DIR)/$*.d -o $@ -c $<
 
-$(D_DIR)%.d: ;
-.PRECIOUS: $(D_DIR)%.d
+$(D_DIR)/%.d: ;
+.PRECIOUS: $(D_DIR)/%.d
 
 $(D_DIR):
-	mkdir -p $@$(C_DIR)
+	mkdir -p $@/$(C_DIR)
 
 $(O_DIR):
-	mkdir -p $@$(C_DIR)
+	mkdir -p $@/$(C_DIR)
 
 .PHONY: clean fclean
 clean:
-	$(RM) $(addprefix $(O_DIR),$(O_FILES))
-	$(RM) $(addprefix $(D_DIR),$(D_FILES))
-	rmdir $(O_DIR) 2> /dev/null || true
-	rmdir $(D_DIR) 2> /dev/null || true
+	$(RM) $(addprefix $(O_DIR)/,$(O_FILES))
+	$(RM) $(addprefix $(D_DIR)/,$(D_FILES))
+	rmdir -p $(O_DIR)/$(C_DIR) 2> /dev/null || true
+	rmdir -p $(D_DIR)/$(C_DIR) 2> /dev/null || true
 
 fclean: clean
 	rm -f $(NAME)
@@ -132,4 +132,4 @@ fclean: clean
 .PHONY: re
 re: fclean all
 
-include $(wildcard $(D_DIR)*.d)
+include $(wildcard $(D_DIR)/*.d)
