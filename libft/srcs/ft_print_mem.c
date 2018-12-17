@@ -6,7 +6,7 @@
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/08 14:21:27 by apion             #+#    #+#             */
-/*   Updated: 2018/12/08 14:49:21 by apion            ###   ########.fr       */
+/*   Updated: 2018/12/17 14:51:10 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	pm_print_hexa(unsigned char *mem, size_t beg, size_t n)
 		ft_putchar(' ');
 		if (j % 8 == 7)
 			ft_putchar(' ');
-		j++;	
+		j++;
 	}
 	while (j < 16)
 	{
@@ -49,7 +49,7 @@ static void	pm_print_char(char *mem, size_t beg, size_t n)
 			ft_putchar(mem[beg + j]);
 		else
 			ft_putchar('.');
-		j++;	
+		j++;
 	}
 	ft_putchar('|');
 }
