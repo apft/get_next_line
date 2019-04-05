@@ -5,29 +5,31 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: apion <apion@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/28 14:48:22 by apion             #+#    #+#             */
-/*   Updated: 2018/12/17 14:40:39 by apion            ###   ########.fr       */
+/*   Created: 2019/03/28 16:10:22 by apion             #+#    #+#             */
+/*   Updated: 2019/04/03 17:52:21 by apion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# include "libft.h"
-# include <unistd.h>
-# include <stdlib.h>
+# define GNL_EOF	-1
+# define GNL_ERROR	-2
 
-# define BUFF_SIZE 1
-# define EOL_CHAR '\n'
+# define BUFF_SIZE	1024
 
-typedef struct	s_lstfd
+# include <sys/types.h>
+
+typedef struct	s_gnl
 {
-	int				fd;
-	char			*res;
-	struct s_lstfd	*prev;
-	struct s_lstfd	*next;
-}				t_lstfd;
+	char		buff[BUFF_SIZE];
+	ssize_t		buff_read;
+	ssize_t		index_start;
+	ssize_t		index_eol;
+	char		*temp;
+	ssize_t		temp_size;
+}				t_gnl;
 
-int				get_next_line(const int fd, char **line);
+ssize_t			get_next_line(const int fd, char **line, int *eol_had_newline);
 
 #endif
