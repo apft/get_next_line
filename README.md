@@ -1,5 +1,5 @@
 # GNL (get next line)
-GNL is a 42 project aimed to develop a function to read a file line by line.
+GNL is a [42] project aimed to develop a function to read a file line by line.
 A line is a set of characters ended by a newline `\n` or by an `EOF` (end of file).
 
 ###### Keywords: *`read` `file descriptor` `static variable`*
@@ -44,5 +44,6 @@ It become clear that here `0` can not be used to indicate the `EOF`. Therefore t
 Those return values are stored as `define` in the `get_next_line.h` header.
 
 
+[42]: https://www.42.fr/
 [v1.0]: https://github.com/apft/get_next_line/releases/tag/v1.0
 [v2.0]: https://github.com/apft/get_next_line/releases/tag/v2.0
